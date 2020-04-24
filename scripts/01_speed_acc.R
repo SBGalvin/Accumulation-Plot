@@ -1,11 +1,28 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # This plot visualises accumulated accuracy ad accumulated time
-#
-# Step 1: identify an order
+# Each line on the plot represents a participant the point at the end of the line is the
+# participants max cumsum RT and max cumsum accuracy
+
+# see:
+# Kyllonen, P. C., & Zu, J. (2016). Use of response time for measuring cognitive ability. 
+#   Journal of Intelligence, 4(4), 14. https://www.mdpi.com/2079-3200/4/4/14
+
+
+# I used this plot to visualise participant scale termination points due to test-wise time limits
+# in a psychometric data set.
+
+# Steps:
+# Step 1: identify an order of events, this is easy to do in when events are labelled by order
+#         This plot would be fairly meaningless without temporal order.
 # Step 2: 
         # perform a cumsum of RT 
         # perform a cumsum of response/accuracy
+        # find an average for use with geom_line colours, geom_point colour and size
+# Step 3:
+        # PLOT!
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+
 
 
 # 00) Set options Load packages -------------------------------------------
@@ -16,9 +33,9 @@ options(
 )
 
 # Packages
-library(tidyverse)
-library(viridis)
-#install.packages("prepdat")
+library(tidyverse) # data analysis plotting, everything really.
+library(viridis)   # colours
+#install.packages("prepdat") # install if you dont have it.
 library(prepdat) # for stroop data
 
 
@@ -103,21 +120,11 @@ stroopdata %>%
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # 3.3
 # Maximum values data (this is used for geom_point locations)
-cumsum_data %>% 
-  group_by(subject) %>% 
-  filter(ac_cs == max(ac_cs)) %>% 
-  ungroup() %>% 
-  unique()
-
-cumsum_data %>% 
-  group_by(subject) %>% 
-  filter(rt_cs == max(rt_cs)) %>% 
-  ungroup() %>% 
-  unique() #%>% 
-  select(subject, )
 
 full_join(
   
+  # extract maximum cumulative accuracy and RT by participant
+  # if you filter by max rt_cs this df should match it
   cumsum_data %>% 
     group_by(subject) %>% 
     filter(ac_cs == max(ac_cs)) %>% 
@@ -128,6 +135,7 @@ full_join(
     group_by(subject) %>% 
     mutate(avg_ac = mean(ac)) %>% 
     ungroup() %>% 
+    # no need for even more duplicate data
     select(subject, avg_ac)
   
   ) %>% 
@@ -215,3 +223,5 @@ cumsum_data_2 %>%
         # panel background
         panel.background = element_blank(),
         panel.grid = element_blank()) -> uh_oh_spaghetti_ooo
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
